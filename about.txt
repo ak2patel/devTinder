@@ -1,0 +1,3 @@
+install 
+=>npm i express
+=>npm i -g nodemon    =>to install on global level
