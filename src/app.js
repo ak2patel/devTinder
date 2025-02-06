@@ -2,7 +2,7 @@ const express = require('express');
 require("./config/database")
 const app = express();
 const connectDB = require('./config/database');
-const User = require('./models,user');
+const User = require('./models/user');
 
 
 
