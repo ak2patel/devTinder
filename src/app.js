@@ -4,8 +4,21 @@ const app = express();
 const connectDB = require('./config/database');
 const User = require('./models/user');
 
+app.use(express.json());
 
 
+app.post("/signup",async(req,res)=>{
+    const user = new User(req.body); 
+    try{ 
+        await user.save();
+        res.send("User added successfully");
+    }
+    catch(err){
+        res.status(400).send("errorn saving the user "+err.message);
+    }
+});
+
+/*
 app.post("/signup",async(req,res)=>{
     const user= new User({
         firstName:"Ankit",
@@ -19,7 +32,7 @@ app.post("/signup",async(req,res)=>{
     await user.save();
    res.send("User added successfully");
    
-});
+});*/
    
     /*const userObj={
         firstName:"Ankit",
