@@ -17,6 +17,7 @@ const connectDB = async()=>{
 })
 .catch((err)=>{
     console.error("database cannot be connected !!!")
-});*/
+});
+*/
 
 module.exports = connectDB;
