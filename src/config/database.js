@@ -1,14 +1,9 @@
 const mongoose = require('mongoose');
 
 const connectDB = async()=>{
-    await mongoose.connect(
-        "mongodb+srv://Akp:Akp121004@akp.l2s1a.mongodb.net/?retryWrites=true&w=majority&appName=Akp"
-         );    
+    await mongoose.connect(process.env.DB);    
 }
-
-
-
-//module.exports = connectDB;
+module.exports = connectDB;
 
 /*connectDB()
 .then(()=>{
@@ -18,6 +13,7 @@ const connectDB = async()=>{
 .catch((err)=>{
     console.error("database cannot be connected !!!")
 });
-*/
+
 
 module.exports = connectDB;
+*/

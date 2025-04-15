@@ -9,5 +9,5 @@ const userSchema = new mongoose.Schema({
     gender     : {type :String}
 })
 
-const userModel = mongoose.model("user",userSchema);
-module.exports = userModel;
+const User = mongoose.model("user",userSchema);
+module.exports = User;

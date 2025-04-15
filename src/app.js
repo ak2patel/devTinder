@@ -1,8 +1,9 @@
 const express = require('express');
-require("./config/database")
 const app = express();
 const connectDB = require('./config/database');
 const User = require('./models/user');
+require("dotenv").config();
+
 
 app.use(express.json());
 
@@ -43,6 +44,7 @@ app.post("/signup",async(req,res)=>{
         age:"22"
 
     }
+    //creating a new instance of the User model
     const user =new User(userObj);*/
 
 //});
@@ -50,7 +52,7 @@ app.post("/signup",async(req,res)=>{
 connectDB()
 .then(()=>{
     console.log("Database connected successfully...");
-    app.listen(3000,()=>{
+    app.listen(process.env.PORT,()=>{
         console.log("server is successfully listening on port 3000");
     });
 })
@@ -58,10 +60,3 @@ connectDB()
     console.error("database cannot be connected !!!")
 });
 
-
-
-
-/*app.listen(3000,()=>{
-    console.log("server is successfully listening on port 3000");
-});
-*/
