@@ -1,3 +1,4 @@
+const { Error } = require('mongoose');
 const connectDB = require('./config/database');
 const User = require('./models/user');
 const express = require('express');
@@ -15,7 +16,7 @@ app.post("/signup",async(req,res)=>{
         res.send("User added successfully");
     }
     catch(err){
-        res.status(400).send("errorn saving the user "+err.message);
+        res.status(400).send("error saving the user "+err.message);
     }
 });
 
@@ -49,17 +50,31 @@ app.get("/feed" ,async(req,res)=>{
 
 
 //User update
-app.patch("/user",async(req,res)=>{
+app.patch("/user/:userId",async(req,res)=>{
 
-    const userId=req.body.userId;
+    const userId=req.params?.userId;
     const data=req.body;
-  
+
+   
     try{
-         await User.findByIdAndUpdate({ _id :userId},data);
+        const allowed_updates= ["photoUrl" , "about" , "gender","skills"];
+
+        const isUpdateAllowed = Object.keys(data).every((k)=>allowed_updates.includes(k));
+        if(!isUpdateAllowed){
+            throw new Error("Update not allowed");
+        }
+        if(data?.skills.length>10){
+            throw new Error("Skill can't more than 10...");
+        }    
+
+
+         await User.findByIdAndUpdate({ _id :userId},data,{
+            runValidators:true,
+         });
          res.send("user updated successfully...");
 
     }catch(err){
-        res.status(400).send("Something went wrong ...");
+        res.status(400).send("Update failed"+err.message);
      }
 
   
