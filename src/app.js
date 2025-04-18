@@ -2,23 +2,119 @@ const { Error } = require('mongoose');
 const connectDB = require('./config/database');
 const User = require('./models/user');
 const express = require('express');
+const bcrypt= require("bcrypt");
 require("dotenv").config();
 const app = express();
+const {validateSignup}= require("./utils/validation")
+const cookieParser = require('cookie-parser');
+const jwt = require("jsonwebtoken");
+const {userAuth} = require("./middleware/auth");
 
 app.use(express.json());
-
+app.use(cookieParser());
 
 
 app.post("/signup",async(req,res)=>{
-    const user = new User(req.body); 
+   
     try{ 
+        validateSignup(req);
+        const {firstName ,lastName ,emailId, password}= req.body;
+
+        const passwordHash =  await bcrypt.hash(password,10);
+         
+        const user = new User({
+            firstName,
+            lastName,
+            emailId,
+            password:passwordHash,
+        }); 
+   
+
+
         await user.save();
         res.send("User added successfully");
     }
     catch(err){
-        res.status(400).send("error saving the user "+err.message);
+        res.status(400).send("ERROR: "+err.message);
     }
 });
+
+//login
+app.post("/login",async (req,res)=>{
+    try{
+        const { emailId, password} = req.body;
+        const user = await User.findOne({emailId});
+        if(!user){
+            throw new Error("Please SignUp or Register first");
+        }
+
+        const isPasswordValid = await bcrypt.compare(password,user.password);
+
+        if(isPasswordValid){
+
+            //Create a JWT Token
+            const token = await jwt.sign({_id: user._id},"this is a secret key");
+            console.log(token);
+
+
+            
+
+
+            //Add token to cookie and send back to user as response
+            res.cookie("token",token);
+
+
+
+            res.send("Login successful...");
+        }
+
+        else {
+            throw new Error("Enter correct password");
+        }
+
+
+    }catch(err){
+        res.status(400).send("ERROR: "+err.message);
+
+    }
+});
+
+//Profile Api
+app.get("/profile",userAuth,async(req,res)=>{
+        
+    try {
+        const cookie= req.cookies;
+        const{token}=cookie;
+        if(!token){
+            throw new Error("Invalid Token Login again");
+        }
+        //Validate the token
+        const isTokenValid = await jwt.verify(token,"this is a secret key")
+       // console.log(isTikenValid);
+       const{_id}= isTokenValid;
+       const user = await User.findById({_id});
+       if(!user){
+        throw new Error("User does not exist");
+       }
+       
+
+       // console.log(cookie);
+        res.send(user);
+    } catch (err) {
+        res.status(400).send("ERROR: "+err.message);  
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
 
 //Get user by Email
 app.get("/user",async(req,res)=>{
