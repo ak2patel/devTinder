@@ -48,18 +48,13 @@ app.post("/login",async (req,res)=>{
             throw new Error("Please SignUp or Register first");
         }
 
-        const isPasswordValid = await bcrypt.compare(password,user.password);
+        const isPasswordValid = await user.validatepassword(password);
 
         if(isPasswordValid){
 
             //Create a JWT Token
-            const token = await jwt.sign({_id: user._id},"this is a secret key");
-            console.log(token);
-
-
+            const token = await user.getJWT();
             
-
-
             //Add token to cookie and send back to user as response
             res.cookie("token",token);
 
@@ -83,22 +78,24 @@ app.post("/login",async (req,res)=>{
 app.get("/profile",userAuth,async(req,res)=>{
         
     try {
-        const cookie= req.cookies;
-        const{token}=cookie;
-        if(!token){
-            throw new Error("Invalid Token Login again");
-        }
-        //Validate the token
-        const isTokenValid = await jwt.verify(token,"this is a secret key")
-       // console.log(isTikenValid);
-       const{_id}= isTokenValid;
-       const user = await User.findById({_id});
-       if(!user){
-        throw new Error("User does not exist");
-       }
+    //     const cookie= req.cookies;
+    //     const{token}=cookie;
+    //     if(!token){
+    //         throw new Error("Invalid Token Login again");
+    //     }
+    //     //Validate the token
+    //     const isTokenValid = await jwt.verify(token,"this is a secret key")
+    //    // console.log(isTikenValid);
+    //    const{_id}= isTokenValid;
+    //   const user = await User.findById({_id});
+
+    // if(!user){
+    //     throw new Error("User does not exist");
+    //    }
        
 
        // console.log(cookie);
+       const user=req.user;  
         res.send(user);
     } catch (err) {
         res.status(400).send("ERROR: "+err.message);  
@@ -134,7 +131,7 @@ app.get("/user",async(req,res)=>{
 
 
 // Feed API     - GET /feed   - get all the users from the database
-app.get("/feed" ,async(req,res)=>{
+app.get("/feed" ,userAuth,async(req,res)=>{
     try{
         const users = await User.find({});
         res.send(users);

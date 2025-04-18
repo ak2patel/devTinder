@@ -17,7 +17,7 @@ try {
     if(!user){
         throw new Error("User not Found");
     }
-    
+    req.user= user;
     next();
 
 
