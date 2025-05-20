@@ -8,7 +8,7 @@ const validator = require("validator");
 require("dotenv").config();
 
 
-
+//view profile
 profileRouter.get("/profile/view",userAuth,async(req,res)=>{
         
     try {
@@ -19,6 +19,7 @@ profileRouter.get("/profile/view",userAuth,async(req,res)=>{
     }
 });
 
+//edit profile
 profileRouter.patch("/profile/edit",userAuth,async(req,res)=>{
     try {
        if(!validateEditProfileData(req)){
@@ -26,7 +27,7 @@ profileRouter.patch("/profile/edit",userAuth,async(req,res)=>{
        }
 
        const user = req.user;
-       console.log(user);
+
        
        Object.keys(req.body).forEach((key)=>(user[key]=req.body[key]));
 
@@ -40,19 +41,17 @@ profileRouter.patch("/profile/edit",userAuth,async(req,res)=>{
     }
 });
 
+//change password
 profileRouter.patch("/profile/password",userAuth,async(req,res)=>{
    try{
        const {password} = req.body;
-       console.log("this is password " + password);
+    
        if(!validator.isStrongPassword(password)){
         throw new Error("Enter a strong password");
     }
        
        const passwordHash =  await bcrypt.hash(password,10);
-       console.log(passwordHash);
-      // const user = new User({password:passwordHash});
-       console.log(req.user);
-       //await user.save();
+      
 
        const user = await User.findByIdAndUpdate(
         req.user._id,
