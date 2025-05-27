@@ -58,7 +58,7 @@ authRouter.post("/login",async (req,res)=>{
 
 
 
-            res.send("Login successful...");
+            res.send(user);
         }
 
         else {
