@@ -2,7 +2,7 @@ const express = require("express");
 const { userAuth } = require("../middleware/auth");
 const userRouter = express.Router();
 const connectionRequest = require("../models/connectionRequest");
-const ConnectionRequestModel = require("../models/connectionRequest");
+//const connectionRequest = require("../models/connectionRequest");
 const { set } = require("mongoose");
 const User = require("../models/user");
 
@@ -31,7 +31,7 @@ userRouter.get("/user/connections",userAuth,async (req,res)=>{
     try{
         const loggedInUser = req.user;
       
-        const connectionRequests = await ConnectionRequestModel.find({
+        const connectionRequests = await connectionRequest.find({
             $or:[
                 {toUserId:loggedInUser._id,status:"accepted"},
                 {fromUserId:loggedInUser._id,status:"accepted"},
@@ -59,12 +59,12 @@ userRouter.get("/user/connections",userAuth,async (req,res)=>{
 userRouter.get("/feed",userAuth , async (req,res)=>{
     try{
         const loggedInUser = req.user;
-        const page  = parseInt(req.query.page)  || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        limit = limit>50?50:limit;
-        const skip = (page-1)*limit;
+        // const page  = parseInt(req.query.page)  || 1;
+        // let limit = parseInt(req.query.limit) || 10;
+        // limit = limit>50?50:limit;
+        // const skip = (page-1)*limit;
 
-        const connectionRequests = await ConnectionRequestModel.find({
+        const connectionRequests = await connectionRequest.find({
             $or:[{fromUserId:loggedInUser._id},{toUserId:loggedInUser._id}]
         }).select("fromUserId toUserId")
         .populate("fromUserId","firstName")
@@ -72,14 +72,19 @@ userRouter.get("/feed",userAuth , async (req,res)=>{
 
         const hideUsersFromFeed = new Set();
         connectionRequests.forEach((req)=>{
-            hideUsersFromFeed.add(req.fromUserId.toString());
-            hideUsersFromFeed.add(req.toUserId.toString());
+            // hideUsersFromFeed.add(req.fromUserId.toString());
+            // hideUsersFromFeed.add(req.toUserId.toString());
+
+            hideUsersFromFeed.add(req.fromUserId._id?.toString?.() || req.fromUserId.toString());
+            hideUsersFromFeed.add(req.toUserId._id?.toString?.() || req.toUserId.toString());
+
         })
 
+         hideUsersFromFeed.add(loggedInUser._id.toString());
         const users = await User.find({
            $and: [{_id: {$nin: Array.from(hideUsersFromFeed)}},
-                  {_id: {$ne:loggedInUser}}]
-        }).select(USER_SAFE_DATA).skip(skip).limit(limit);
+                  {_id: {$ne:loggedInUser._id}}]
+        }).select(USER_SAFE_DATA);//.skip(skip).limit(limit);
 
         res.json({users})
 

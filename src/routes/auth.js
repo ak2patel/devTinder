@@ -20,17 +20,17 @@ authRouter.post("/signup",async(req,res)=>{
         const user = new User({
             firstName,
             lastName,
-            gender,
-            age,
-            skills,
             emailId,
             password:passwordHash,
         }); 
    
 
 
-        await user.save();
-        res.send("User added successfully");
+       const savedUser =  await user.save();
+        const token = await savedUser.getJWT();
+        res.cookie("token",token);
+
+        res.json({message:"User added successfully",data:savedUser});
     }
     catch(err){
         res.status(400).send("ERROR: "+err.message);
@@ -43,7 +43,7 @@ authRouter.post("/login",async (req,res)=>{
         const { emailId, password} = req.body;
         const user = await User.findOne({emailId});
         if(!user){
-            throw new Error("Please SignUp or Register first");
+            throw new Error("Please SignUp");
         }
 
         const isPasswordValid = await user.validatepassword(password);
@@ -62,7 +62,7 @@ authRouter.post("/login",async (req,res)=>{
         }
 
         else {
-            throw new Error("Enter correct password");
+            throw new Error("Invalid Credentials");
         }
 
 
