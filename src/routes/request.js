@@ -40,9 +40,13 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
 
     const data = await connectionRequest.save();
     
-    //Adding Email service
-    const emailRes = await run();
-    console.log(emailRes);
+  // this feature will be added later**********************
+    // const emailRes = await run("akpate100601@gmail.com",
+    //   "noreply@devtinder.apdev.live",
+    //   "DevTinder Email Verification OTP",
+    //   `<h3>Your OTP is 56895. It will expire in 5 minutes.</h3>`,
+    //   `Your OTP is 47855. It will expire in 5 minutes.`);
+    // console.log(emailRes);
 
     res.json({
         message:"Connection request send successfully",
