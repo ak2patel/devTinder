@@ -1,5 +1,4 @@
 const socket = require("socket.io");
-const crypto = require("crypto");
 
 const initializeSocket = (server)=>{
      const io = socket(server,{
@@ -7,13 +6,6 @@ const initializeSocket = (server)=>{
         origin:"http://localhost:5173"
     }
 });
-
-const getRoomId = ({userId,targetUserId})=>{
-    crypto
-    .createHash("sha256")
-    .update([userId,targetUserId].sort().join("116"))
-    .digest("hex");
-}
 
 io.on("connection",(socket)=>{
     //Handle Events
