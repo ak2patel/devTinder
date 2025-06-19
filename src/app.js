@@ -4,6 +4,8 @@ const cors = require('cors');
 require("dotenv").config();
 const app = express();
 const cookieParser = require('cookie-parser');
+const http = require("http");
+const initializeSocket = require("./utils/socket")
 
 
 //const { Error } = require('mongoose');
@@ -32,11 +34,15 @@ app.use("/",profileRouter);
 app.use("/",userRouter);
 
 
+const server = http.createServer(app); 
+initializeSocket(server);
+
+
 
 connectDB()
 .then(()=>{
     console.log("Database connected successfully...");
-    app.listen(process.env.PORT,()=>{
+    server.listen(process.env.PORT,()=>{
         console.log("server is successfully listening on port 3000");
     });
 })
