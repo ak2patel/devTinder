@@ -1,102 +1,118 @@
-# 🚀 DevTinder
 
-**DevTinder** is a full-stack web application that helps developers connect, collaborate, and find potential teammates for projects based on their skills, interests, and tech stacks — similar to how Tinder matches users, but for developers.
+# DevTinder
 
-🔗 **Live Demo:** [https://devtinder.apdev.live](https://devtinder.apdev.live)
+A lightweight "Tinder for Developers" prototype built with Node.js, Express and MongoDB.
+
+## Overview
+
+DevTinder is a small prototype backend that lets developers create profiles, discover other developers, send/accept connection requests, and chat in realtime. It demonstrates authentication (JWT in cookies), REST APIs, MongoDB models, input validation, email sending via AWS SES, and WebSocket chat.
+
+## Quick links
+
+- `src/app.js` — application entry
+- `src/config/database.js` — MongoDB connector
+- `src/middleware/auth.js` — authentication middleware
+- `src/models` — data models (`user.js`, `chat.js`, `connectionRequest.js`)
+- `src/routes` — REST routes (`auth.js`, `user.js`, `profile.js`, `request.js`, `chat.js`)
+- `src/utils` — helpers (`socket.js`, `sendEmail.js`, `sesClient.js`, `validation.js`)
+
+## Requirements
+
+- Node.js 16+ (or compatible)
+- npm
+- MongoDB (connection string in `.env`)
+
+## Install
+
+Install dependencies:
+
+```powershell
+npm install
+```
+
+## Run
+
+- Development (auto-reload if you have nodemon configured):
+
+```powershell
+npm run dev
+```
+
+- Production:
+
+```powershell
+npm run start
+```
+
+The application reads `PORT` from the environment. If not set, it will use the default configured in the code (commonly 3000).
+
+## Environment variables
+
+Create a `.env` file in the project root and set the following values:
+
+- `DB` — MongoDB connection string (required)
+- `PORT` — (optional) port for the server
+- `SECRET` — JWT secret
+- `AWS_ACCESS_KEY`, `AWS_SECRET_KEY` — (optional) credentials for AWS SES
+
+## API (high-level)
+
+See the route files under `src/routes` for implementation. High-level endpoints:
+
+- POST /signup — register a new user
+- POST /login — login and set JWT cookie
+- POST /logout — clear JWT cookie
+- GET /profile/view — view current user's profile (protected)
+- PATCH /profile/edit — edit user profile
+- PATCH /profile/password — change password
+- POST /request/send/:status/:toUserId — send a connection request
+- POST /request/review/:status/:requestId — accept/decline a request
+- GET /user/requests/received — received requests
+- GET /user/connections — list connections
+- GET /feed — discoverable users
+- GET /chat/:targetUserId — get or create a chat with a user
+
+## WebSocket events
+
+Real-time messaging and presence are implemented in `src/utils/socket.js`. Typical events include `joinChat`, `sendMessage`, and `messageReceived`.
+
+## Project structure
+
+```
+src/
+	app.js
+	config/
+		database.js
+	middleware/
+		auth.js
+	models/
+		user.js
+		chat.js
+		connectionRequest.js
+	routes/
+		auth.js
+		user.js
+		profile.js
+		request.js
+		chat.js
+	utils/
+		socket.js
+		sendEmail.js
+		sesClient.js
+		validation.js
+```
+
+## Notes
+
+- Authentication uses JWT stored in cookies (see `src/middleware/auth.js`).
+- Email sending uses AWS SES (`src/utils/sesClient.js`, `src/utils/sendEmail.js`).
+- Validation helpers are in `src/utils/validation.js`.
+
+If you'd like, I can also:
+- Add an example `.env` file
+- Add cURL examples for the major endpoints
+- Create a Postman collection
 
 ---
 
-## 🛠️ Tech Stack
-
-**Frontend:** React.js, Tailwind CSS  
-**Backend:** Node.js, Express.js  
-**Database:** MongoDB (Mongoose ORM)  
-**Authentication:** JWT (JSON Web Token)  
-**Deployment:** AWS EC2 + Nginx  
-**Package Manager:** npm  
-
----
-
-## ✨ Features
-
-- 🔐 **User Authentication** – Secure signup and login using JWT.  
-- 👤 **Developer Profiles** – Create and customize your tech profile.  
-- 💡 **Smart Matching System** – Matches developers based on shared skills and project interests.  
-- 💬 **Real-Time Chat** – Communicate instantly with matched developers.  
-- 🌐 **Responsive UI** – Fully responsive interface built with Tailwind CSS.  
-- 🧭 **Explore Section** – Browse and connect with talented developers across domains.  
-
----
-
-## 🧩 Project Structure
-
-DevTinder/
-│
-├── client/ # React frontend
-│ ├── src/
-│ │ ├── components/ # Reusable UI components
-│ │ ├── pages/ # App pages (Home, Profile, Matches, Chat, etc.)
-│ │ ├── services/ # API integration files
-│ │ ├── App.js
-│ │ └── index.js
-│ ├── public/
-│ └── package.json
-│
-├── server/ # Backend code (Node.js + Express)
-│ ├── controllers/ # Business logic for APIs
-│ ├── routes/ # API endpoints
-│ ├── models/ # Mongoose schemas
-│ ├── middleware/ # Auth and error handling
-│ ├── server.js # Entry point
-│ └── package.json
-│
-├── .env.example # Environment variable template
-├── .gitignore
-├── README.md
-└── LICENSE
-
-## ⚙️ Installation & Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/devtinder.git
-   cd devtinder
-
-2. Install dependencies
-
-   npm install
-
-3. Set environment variables
-
-   Create a .env file in the server directory and add:
-
-    MONGO_URI=your_mongodb_connection_string
-    JWT_SECRET=your_jwt_secret
-
-
-4. Run the app
-
-   npm start
-
-5. Open your browser at
-    http://localhost:3000
-
-
-🌍 Deployment
-
-Deployed on AWS EC2 using Nginx as a reverse proxy for production.
-The backend runs on Node.js, and the frontend is built and served using Nginx.
-
-👨‍💻 Developer
-
-Ankit Patel
-🎓 B.Tech CSE, IIIT Bhagalpur
-💼 Full Stack Developer | MERN Stack Enthusiast
-🔗 LinkedIn
-
-🪪 License
-
-This project is licensed under the MIT License — feel free to use and modify it.
-
-
-
+Last updated: 2025-10-10
